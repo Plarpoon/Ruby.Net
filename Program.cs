@@ -22,7 +22,9 @@ namespace Ruby.Net
 
         public async Task MainAsync()
         {
-            _client = new DiscordSocketClient();
+            //  Increase cache size if needed.
+            var _config = new DiscordSocketConfig { MessageCacheSize = 100 };
+            _client = new DiscordSocketClient(_config);
 
             _client.Log += Log;
 
@@ -31,8 +33,23 @@ namespace Ruby.Net
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
 
-            // Block this task until the program is closed.
+            //  Here starts the actual bot.
+            _client.MessageUpdated += MessageUpdated;
+            _client.Ready += () =>
+            {
+                Console.WriteLine("Ruby is now online!");
+                return Task.CompletedTask;
+            };
+
+            //  Block this task until the program is closed.
             await Task.Delay(-1);
+        }
+
+        private async Task MessageUpdated(Cacheable<IMessage, ulong> before, SocketMessage after, ISocketMessageChannel channel)
+        {
+            // If the message was not in the cache, downloading it will result in getting a copy of `after`.
+            var message = await before.GetOrDownloadAsync();
+            Console.WriteLine($"{message} -> {after}");
         }
     }
 }
