@@ -28,7 +28,7 @@ namespace Ruby.Net
 
             _client.Log += Log;
 
-            var token = JsonConvert.DeserializeObject<ConfigFile>(File.ReadAllText("config.json")).Token;
+            var token = JsonConvert.DeserializeObject<ConfigFile>(File.ReadAllText("secrets.json")).BotToken;
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();

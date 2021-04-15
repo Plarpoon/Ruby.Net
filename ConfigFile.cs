@@ -2,6 +2,6 @@
 {
     internal class ConfigFile
     {
-        public string Token { get; set; }
+        public string BotToken { get; set; }
     }
 }

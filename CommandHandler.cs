@@ -33,7 +33,7 @@ namespace Ruby.Net
 
             //  Create a number to track where the prefix ends and the command begins, sets prefix.
             int argPos = 0;
-            if (!(message.HasCharPrefix('!', ref argPos) ||
+            if (!(message.HasCharPrefix('/', ref argPos) ||
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
                 return;

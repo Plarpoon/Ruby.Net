@@ -11,13 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="ConfigFile.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="config.json">
+    <None Update="secrets.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
