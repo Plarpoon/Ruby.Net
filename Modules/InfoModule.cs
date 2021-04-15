@@ -13,7 +13,7 @@ namespace Ruby.Net.Modules
             => ReplyAsync(echo);
     }
 
-    public class SampleModule : ModuleBase<SocketCommandContext>
+    public class WhoIs : ModuleBase<SocketCommandContext>
     {
         //  whois command
         [Command("userinfo")]
