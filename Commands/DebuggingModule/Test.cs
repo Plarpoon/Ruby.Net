@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace Ruby.Net.Modules
 {
-    public class DebuggingModule : ModuleBase<SocketCommandContext>
+    public class Test : ModuleBase<SocketCommandContext>
     {
-        [Command("TestCommand")]
+        [Command("test")]
         public async Task TestCommand()
         {
             await ReplyAsync("This is a test reply");

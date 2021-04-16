@@ -14,10 +14,10 @@ namespace Ruby.Net
     {
         //  Declaring discards.
         private static DiscordSocketClient _client;
-
         private static CommandService _commands;
         private static readonly IServiceProvider _services;
-        private const string TimeFormat = "HH:mm:ss tt";
+
+        private const string TimeFormat = "dd/MM/yyyy HH:mm:ss tt";
 
         private static Task Log(LogMessage msg)
         {
@@ -67,7 +67,7 @@ namespace Ruby.Net
             _commands.Log += Log;
             _client.Ready += () =>
             {
-                Console.WriteLine(DateTime.Now.ToString(TimeFormat) + "Ruby" + "        " + "Online");
+                Console.WriteLine(DateTime.Now.ToString(TimeFormat) + "[   Debug]" + "  Status:" + " Comrade Ruby connected and ready.");
                 return Task.CompletedTask;
             };
 
