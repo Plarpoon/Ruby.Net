@@ -14,8 +14,10 @@ namespace Ruby.Net
     {
         //  Declaring discards.
         private static DiscordSocketClient _client;
+
         private static CommandService _commands;
-        private static readonly IServiceProvider _services;
+
+        public static IServiceProvider Services { get; }
 
         private const string TimeFormat = "dd/MM/yyyy HH:mm:ss tt";
 
@@ -58,7 +60,7 @@ namespace Ruby.Net
 
             _commands = new CommandService(new CommandServiceConfig
             {
-                LogLevel = LogSeverity.Info,
+                LogLevel = LogSeverity.Debug,
                 CaseSensitiveCommands = false,
             });
 
@@ -67,7 +69,7 @@ namespace Ruby.Net
             _commands.Log += Log;
             _client.Ready += () =>
             {
-                Console.WriteLine(DateTime.Now.ToString(TimeFormat) + "[   Debug]" + "  Status:" + " Comrade Ruby connected and ready.");
+                Console.WriteLine(DateTime.Now.ToString(TimeFormat) + "[    Text]" + "  Status: " + "Ruby connected and ready.");
                 return Task.CompletedTask;
             };
 
@@ -83,7 +85,7 @@ namespace Ruby.Net
         //Install Command Async
         private static async Task InitCommands()
         {
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), Services);
 
             // Subscribe a handler to see if a message invokes a command.
             _client.MessageReceived += HandleCommandAsync;
@@ -99,12 +101,12 @@ namespace Ruby.Net
 
             // Create a number to track where the prefix ends and the command begins
             int pos = 0;
-            if (msg.HasCharPrefix('/', ref pos))
+            if (msg.HasCharPrefix('!', ref pos))
             {
                 var context = new SocketCommandContext(_client, msg);
 
                 //  Execute the command.
-                var result = await _commands.ExecuteAsync(context, pos, _services);
+                var result = await _commands.ExecuteAsync(context, pos, Services);
                 if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                     await msg.Channel.SendMessageAsync(result.ErrorReason);
             }

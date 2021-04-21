@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Ruby.Net.Commands.InfoModule
 {
-    public class Say : ModuleBase<SocketCommandContext>
+    public class WhoIs : ModuleBase<SocketCommandContext>
     {
         //  "whois" command
         [Command("whois")]
