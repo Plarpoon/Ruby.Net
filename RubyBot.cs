@@ -54,13 +54,13 @@ namespace Ruby.Net
         {
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
-                LogLevel = LogSeverity.Info,
+                LogLevel = LogSeverity.Debug, //    Change LogSeverity to "Info" when done testing.
                 MessageCacheSize = 100,
             });
 
             _commands = new CommandService(new CommandServiceConfig
             {
-                LogLevel = LogSeverity.Debug,
+                LogLevel = LogSeverity.Debug, //    Change LogSeverity to "Info" when done testing.
                 CaseSensitiveCommands = false,
             });
 

@@ -1,4 +1,6 @@
 ﻿using Discord.Commands;
+using RaiderIO;
+using RaiderIO.Entities.Enums;
 using System.Threading.Tasks;
 
 namespace Ruby.Net.Modules
@@ -11,6 +13,8 @@ namespace Ruby.Net.Modules
         [Alias("r", "raiderio")]
         public async Task RaiderIOCommand()
         {
+            //var client = new RaiderIOClient(Region.US, "Draenor", "Perifete");
+
             await ReplyAsync("This is a test reply");
         }
     }
