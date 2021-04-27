@@ -1,7 +1,7 @@
 ﻿using Discord.Commands;
 using System.Threading.Tasks;
 
-namespace Ruby.Net.Modules
+namespace RubyNet.Modules
 {
     public class Say : ModuleBase<SocketCommandContext>
     {

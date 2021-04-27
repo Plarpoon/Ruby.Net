@@ -3,7 +3,7 @@ using RaiderIO;
 using RaiderIO.Entities.Enums;
 using System.Threading.Tasks;
 
-namespace Ruby.Net.Modules
+namespace RubyNet.Modules
 {
     public class RaiderIO : ModuleBase<SocketCommandContext>
     {
