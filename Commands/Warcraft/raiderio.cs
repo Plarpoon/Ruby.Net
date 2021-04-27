@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RubyNet.Modules
 {
-    public class RaiderIO : ModuleBase<SocketCommandContext>
+    public class RaiderIO : ModuleBase
     {
         [Command("raiderio")]
         [Summary

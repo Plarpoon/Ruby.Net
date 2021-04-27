@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RubyNet.Modules
 {
-    public class Affixes : ModuleBase<SocketCommandContext>
+    public class Affixes : ModuleBase
     {
         [Command("weekly")]
         public async Task WeeklyAffixes()

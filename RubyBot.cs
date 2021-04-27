@@ -10,6 +10,8 @@ namespace RubyNet
 {
     public class RubyBot
     {
+        public const string TimeFormat = "dd/MM/yyyy HH:mm:ss tt";
+
         public IConfigurationRoot Configuration { get; }
 
         public RubyBot(string[] args)

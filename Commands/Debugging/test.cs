@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 
 namespace RubyNet.Modules
 {
-    public class Test : ModuleBase<SocketCommandContext>
+    public class Test : ModuleBase
     {
         [Command("test")]
         public async Task TestCommand()
         {
-            await ReplyAsync("This is a test reply");
+            await Context.Channel.SendMessageAsync("This is an automated test reply!");
         }
     }
 }

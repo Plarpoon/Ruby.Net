@@ -2,7 +2,7 @@
 using Discord.WebSocket;
 using System.Threading.Tasks;
 
-namespace RubyNet.Commands.InfoModule
+namespace Ruby.Net.Commands.InfoModule
 {
     public class WhoIs : ModuleBase<SocketCommandContext>
     {

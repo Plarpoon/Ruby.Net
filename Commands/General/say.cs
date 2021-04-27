@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace RubyNet.Modules
 {
-    public class Say : ModuleBase<SocketCommandContext>
+    public class Say : ModuleBase
     {
         //	"say" command
         [Command("say")]
