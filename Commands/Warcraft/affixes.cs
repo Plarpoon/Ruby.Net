@@ -3,7 +3,7 @@ using RaiderIO;
 using RaiderIO.Entities.Enums;
 using System.Threading.Tasks;
 
-namespace RubyNet.Modules
+namespace RubyNet.Modules.Warcraft
 {
     public class Affixes : ModuleBase
     {

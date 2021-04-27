@@ -1,7 +1,7 @@
 ﻿using Discord.Commands;
 using System.Threading.Tasks;
 
-namespace RubyNet.Modules
+namespace RubyNet.Modules.Debugging
 {
     public class Test : ModuleBase
     {
