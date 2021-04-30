@@ -3,9 +3,11 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace RubyNet.Commands.Administration
 {
+    [UsedImplicitly]
     public class Purge : ModuleBase
     {
         [Command("purge")]
@@ -13,9 +15,10 @@ namespace RubyNet.Commands.Administration
         public async Task PurgeCommand(int amount)
         {
             var messages = await Context.Channel.GetMessagesAsync(amount + 1).FlattenAsync();
-            await (Context.Channel as SocketTextChannel).DeleteMessagesAsync(messages);
+            var enumerable = messages.ToList();
+            await ((SocketTextChannel) Context.Channel).DeleteMessagesAsync(enumerable);
 
-            var message = await Context.Channel.SendMessageAsync($"{ messages.Count()} messages deleted succesfully!");
+            var message = await Context.Channel.SendMessageAsync($"{ enumerable.Count} message/s deleted successfully!");
             await Task.Delay(2500);
             await message.DeleteAsync();
         }

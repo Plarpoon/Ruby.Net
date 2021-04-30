@@ -1,6 +1,5 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -11,22 +10,20 @@ namespace RubyNet.Services
 {
     public class StartupService
     {
-        public  static   IServiceProvider _provider;
+        private  static   IServiceProvider _provider;
         private readonly DiscordSocketClient _discord;
         private readonly CommandService _commands;
-        private readonly IConfigurationRoot _config;
 
-        public StartupService(IServiceProvider provider, DiscordSocketClient discord, CommandService commands, IConfigurationRoot config)
+        public StartupService(IServiceProvider provider, DiscordSocketClient discord, CommandService commands)
         {
             _provider = provider;
-            _config = config;
             _discord = discord;
             _commands = commands;
         }
 
         public async Task StartAsync()
         {
-            string token = JsonConvert.DeserializeObject<ConfigFile>(File.ReadAllText("_secrets.json")).BotToken;
+            var token = JsonConvert.DeserializeObject<ConfigFile>(await File.ReadAllTextAsync("_secrets.json")).BotToken;
             if (string.IsNullOrEmpty(token))
             {
                 Console.WriteLine("bot token is missing.");

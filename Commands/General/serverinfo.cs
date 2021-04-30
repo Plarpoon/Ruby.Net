@@ -3,13 +3,15 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace RubyNet.Commands.General
 {
+    [UsedImplicitly]
     public class Serverinfo : ModuleBase
     {
         [Command("serverinfo")]
-        [Alias("serverinfo", "sinfo")]
+        [Alias("sinfo")]
         public async Task ServerInfoCommand()
         {
             var builder = new EmbedBuilder()
@@ -18,8 +20,8 @@ namespace RubyNet.Commands.General
                 .WithColor(new Color(255, 0, 0))
                 .AddField("Created:", Context.Guild.CreatedAt.ToString(RubyBot.TimeFormat), true)
                 .AddField("Server ID:", Context.Guild.Id)
-                .AddField("Online Users", (Context.Guild as SocketGuild).Users.Where(x => x.Status != UserStatus.Offline).Count() + " users", true)
-                .AddField("Registered Users:", (Context.Guild as SocketGuild).MemberCount + " users", true);
+                .AddField("Online Users", ((SocketGuild) Context.Guild).Users.Count(x => x.Status != UserStatus.Offline) + " users", true)
+                .AddField("Registered Users:", ((SocketGuild) Context.Guild).MemberCount + " users", true);
             var embed = builder.Build();
 
             await Context.Channel.SendMessageAsync(null, false, embed);

@@ -1,8 +1,10 @@
-﻿using Discord.Commands;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Discord.Commands;
+using JetBrains.Annotations;
 
-namespace RubyNet.Modules.General
+namespace RubyNet.Commands.General
 {
+    [UsedImplicitly]
     public class Say : ModuleBase
     {
         //	"say" command

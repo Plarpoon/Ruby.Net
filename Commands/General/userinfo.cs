@@ -3,15 +3,17 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace RubyNet.Commands.General
 {
+    [UsedImplicitly]
     public class UserInfo : ModuleBase
     {
-        [Command("uinfo")]
+        [Command("userinfo")]
         [Summary
         ("Returns info about the current user information.")]
-        [Alias("uinfo", "userinfo")]
+        [Alias("uinfo")]
         public async Task UserInfoCommand(SocketGuildUser user = null)  //  "user" is the other user that has been passed as an argument in-chat.
         {
             if (user == null)
@@ -22,8 +24,8 @@ namespace RubyNet.Commands.General
                     .AddField("Username:", Context.User.Username, false)
                     .AddField("User ID:", Context.User.Id, false)
                     .AddField("Joined Discord:", Context.User.CreatedAt.ToString(RubyBot.TimeFormat), true)
-                    .AddField("Joined this server:", (Context.User as SocketGuildUser).JoinedAt.Value.ToString(RubyBot.TimeFormat), true)
-                    .AddField("Roles assigned:", string.Join(" ", (Context.User as SocketGuildUser).Roles.Select(x => x.Mention))) //   this last part after "Roles" makes so the message will mention every role without pinging them.
+                    .AddField("Joined this server:", ((SocketGuildUser) Context.User).JoinedAt?.ToString(RubyBot.TimeFormat), true)
+                    .AddField("Roles assigned:", string.Join(" ", ((SocketGuildUser) Context.User).Roles.Select(x => x.Mention))) //   this last part after "Roles" makes so the message will mention every role without pinging them.
                     .WithCurrentTimestamp();
 
                 var embed = builder.Build();
@@ -38,7 +40,7 @@ namespace RubyNet.Commands.General
                     .AddField("Username:", user.Username, false)
                     .AddField("User ID:", user.Id, false)
                     .AddField("Joined Discord:", user.CreatedAt.ToString(RubyBot.TimeFormat), true)
-                    .AddField("Joined this server:", user.JoinedAt.Value.ToString(RubyBot.TimeFormat), true)
+                    .AddField("Joined this server:", user.JoinedAt?.ToString(RubyBot.TimeFormat), true)
                     .AddField("Roles assigned:", string.Join(" ", user.Roles.Select(x => x.Mention)))
                     .WithCurrentTimestamp();
 

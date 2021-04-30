@@ -8,10 +8,10 @@ namespace RubyNet.Services
 {
     public class CommandHandler
     {
-        public static IServiceProvider _provider;
-        public static DiscordSocketClient _discord;
-        public static CommandService _commands;
-        public static IConfigurationRoot _config;
+        private static IServiceProvider _provider;
+        private static DiscordSocketClient _discord;
+        private static CommandService _commands;
+        private static IConfigurationRoot _config;
 
         public CommandHandler(DiscordSocketClient discord, CommandService commands, IConfigurationRoot config, IServiceProvider provider)
         {
@@ -26,14 +26,14 @@ namespace RubyNet.Services
         }
 
         //  check if message is for the bot.
-        private async Task OnMessageReceived(SocketMessage arg)
+        private static async Task OnMessageReceived(SocketMessage arg)
         {
             var msg = arg as SocketUserMessage;
 
-            if (msg.Author.IsBot) return;
+            if (msg != null && msg.Author.IsBot) return;
             var context = new SocketCommandContext(_discord, msg);
 
-            int pos = 0;
+            var pos = 0;
             if (msg.HasStringPrefix(_config["prefix"], ref pos) || msg.HasMentionPrefix(_discord.CurrentUser, ref pos))
             {
                 var result = await _commands.ExecuteAsync(context, pos, _provider);
@@ -42,14 +42,18 @@ namespace RubyNet.Services
                 {
                     var reason = result.Error;
 
-                    await context.Channel.SendMessageAsync($"The following error occured: \n {reason}");
+                    await context.Channel.SendMessageAsync($"The following error occurred: \n {reason}");
                     Console.WriteLine(reason);
+                }
+                else
+                {
+                    await context.Message.DeleteAsync(); //  delete successfully executed commands.
                 }
             }
         }
 
         //  console feedback for bot online status.
-        private Task OnReady()
+        private static Task OnReady()
         {
             Console.WriteLine($"Connected as {_discord.CurrentUser.Username}#{_discord.CurrentUser.Discriminator}");
             return Task.CompletedTask;

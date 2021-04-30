@@ -12,9 +12,9 @@ namespace RubyNet
     {
         public const string TimeFormat = "dd/MM/yyyy HH:mm:ss tt";
 
-        public IConfigurationRoot Configuration { get; }
+        private IConfigurationRoot Configuration { get; }
 
-        public RubyBot(string[] args)
+        public RubyBot()
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
@@ -24,11 +24,12 @@ namespace RubyNet
 
         public static async Task RunAsync(string[] args)
         {
-            var startup = new RubyBot(args);
+            if (args == null) throw new ArgumentNullException(nameof(args)); // might have to remove this line.
+            var startup = new RubyBot();
             await startup.RunAsync();
         }
 
-        public async Task RunAsync()
+        private async Task RunAsync()
         {
             var services = new ServiceCollection();
             ConfigureServices(services);

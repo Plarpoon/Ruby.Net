@@ -1,17 +1,17 @@
-﻿using Discord.Commands;
-using RaiderIO;
-using RaiderIO.Entities.Enums;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Discord.Commands;
+using JetBrains.Annotations;
 
-namespace RubyNet.Modules.Warcraft
+namespace RubyNet.Commands.Warcraft
 {
-    public class RaiderIO : ModuleBase
+    [UsedImplicitly]
+    public class RaiderIo : ModuleBase
     {
         [Command("raiderio")]
         [Summary
         ("Assigns roles to the current user based on the raiderio profile, or the user parameter, if one passed.")]
         [Alias("r", "raiderio")]
-        public async Task RaiderIOCommand()
+        public async Task RaiderIoCommand()
         {
             //var client = new RaiderIOClient(Region.US, "Draenor", "Perifete");
 

@@ -1,8 +1,9 @@
-﻿namespace RubyNet
+﻿using JetBrains.Annotations;
+
+namespace RubyNet
 {
     internal class ConfigFile
     {
-        //  secrets.json
-        public string BotToken { get; set; }
+        public string BotToken { get; [UsedImplicitly] set; } //  secrets.json
     }
 }
