@@ -1,10 +1,11 @@
-﻿using Discord.Commands;
-using Discord.WebSocket;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+using Newtonsoft.Json;
 
 namespace RubyNet.Services
 {
@@ -30,7 +31,7 @@ namespace RubyNet.Services
                 return;
             }
 
-            await _discord.LoginAsync(Discord.TokenType.Bot, token);
+            await _discord.LoginAsync(TokenType.Bot, token);
             await _discord.StartAsync();
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);

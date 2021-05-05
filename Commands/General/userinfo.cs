@@ -1,8 +1,8 @@
-﻿using Discord;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using System.Linq;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace RubyNet.Commands.General
@@ -21,8 +21,8 @@ namespace RubyNet.Commands.General
                 var builder = new EmbedBuilder()
                     .WithThumbnailUrl(Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl())
                     .WithColor(new Color(255, 0, 0))
-                    .AddField("Username:", Context.User.Username, false)
-                    .AddField("User ID:", Context.User.Id, false)
+                    .AddField("Username:", Context.User.Username)
+                    .AddField("User ID:", Context.User.Id)
                     .AddField("Joined Discord:", Context.User.CreatedAt.ToString(RubyBot.TimeFormat), true)
                     .AddField("Joined this server:", ((SocketGuildUser) Context.User).JoinedAt?.ToString(RubyBot.TimeFormat), true)
                     .AddField("Roles assigned:", string.Join(" ", ((SocketGuildUser) Context.User).Roles.Select(x => x.Mention))) //   this last part after "Roles" makes so the message will mention every role without pinging them.
@@ -37,8 +37,8 @@ namespace RubyNet.Commands.General
                 var builder = new EmbedBuilder()
                     .WithThumbnailUrl(user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
                     .WithColor(new Color(255, 0, 0))
-                    .AddField("Username:", user.Username, false)
-                    .AddField("User ID:", user.Id, false)
+                    .AddField("Username:", user.Username)
+                    .AddField("User ID:", user.Id)
                     .AddField("Joined Discord:", user.CreatedAt.ToString(RubyBot.TimeFormat), true)
                     .AddField("Joined this server:", user.JoinedAt?.ToString(RubyBot.TimeFormat), true)
                     .AddField("Roles assigned:", string.Join(" ", user.Roles.Select(x => x.Mention)))

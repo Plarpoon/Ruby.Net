@@ -1,10 +1,11 @@
-﻿using Discord.Commands;
+﻿using System;
+using System.Threading.Tasks;
+using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RubyNet.Services;
-using System;
-using System.Threading.Tasks;
 
 namespace RubyNet
 {
@@ -45,12 +46,12 @@ namespace RubyNet
         {
             services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
             {
-                LogLevel = Discord.LogSeverity.Verbose,
+                LogLevel = LogSeverity.Verbose,
                 MessageCacheSize = 1000
             }))
             .AddSingleton(new CommandService(new CommandServiceConfig
             {
-                LogLevel = Discord.LogSeverity.Verbose,
+                LogLevel = LogSeverity.Verbose,
                 DefaultRunMode = RunMode.Async,
                 CaseSensitiveCommands = false,
             }))
