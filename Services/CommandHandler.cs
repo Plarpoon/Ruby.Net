@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using Discord.Commands;
+﻿using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Threading.Tasks;
 
 namespace RubyNet.Services
 {
@@ -38,15 +38,21 @@ namespace RubyNet.Services
             {
                 var result = await _commands.ExecuteAsync(context, pos, _provider);
 
+                var channel = msg?.Channel as SocketGuildChannel;
+                var guild = channel?.Guild.Name;
+                Console.WriteLine("\n" + DateTime.Now.ToString(RubyBot.TimeFormat) + "\nUser: " + msg?.Author + "\nServer: " + guild + "\nChannel: " + msg?.Channel + " \nMessage: " + msg + "\n");
+
                 if (!result.IsSuccess)
                 {
                     var reason = result.Error;
 
+                    Console.WriteLine(result);
                     await context.Channel.SendMessageAsync($"The following error occurred: \n {reason}");
                     Console.WriteLine(reason);
                 }
                 else
                 {
+                    Console.WriteLine(result);
                     await context.Message.DeleteAsync(); //  delete successfully executed commands.
                 }
             }
@@ -55,7 +61,7 @@ namespace RubyNet.Services
         //  console feedback for bot online status.
         private static Task OnReady()
         {
-            Console.WriteLine($"Connected as {_discord.CurrentUser.Username}#{_discord.CurrentUser.Discriminator}");
+            Console.WriteLine(DateTime.Now.ToString(RubyBot.TimeFormat) + $"Connected as {_discord.CurrentUser.Username}#{_discord.CurrentUser.Discriminator}");
             return Task.CompletedTask;
         }
     }
