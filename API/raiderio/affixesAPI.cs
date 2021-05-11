@@ -32,10 +32,10 @@ namespace RubyNet.API.raiderio
         public string WowheadUrl { get; }
     }
 
-    public class Root
+    public class RootAffixes
     {
         [JsonConstructor]
-        public Root(
+        public RootAffixes(
             [JsonProperty("region")] string region,
             [JsonProperty("title")] string title,
             [JsonProperty("leaderboard_url")] string leaderboardUrl,

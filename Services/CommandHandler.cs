@@ -38,21 +38,50 @@ namespace RubyNet.Services
             {
                 var result = await _commands.ExecuteAsync(context, pos, _provider);
 
+                //              Logs section.
                 var channel = msg?.Channel as SocketGuildChannel;
                 var guild = channel?.Guild.Name;
-                Console.WriteLine("\n" + DateTime.Now.ToString(RubyBot.TimeFormat) + "\nUser: " + msg?.Author + "\nServer: " + guild + "\nChannel: " + msg?.Channel + " \nMessage: " + msg + "\n");
+                //  timestamp.
+                Console.WriteLine("\n" + DateTime.Now.ToString(RubyBot.TimeFormat));
+                //  username.
+                Console.Write("User:    ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine(msg?.Author);
+                Console.ResetColor();
+                //  server name.
+                Console.Write("Server:  ");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine(guild);
+                Console.ResetColor();
+                //  channel name.
+                Console.Write("Channel: ");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine(msg?.Channel);
+                Console.ResetColor();
+                //  message content.
+                Console.Write("Message: ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine(msg + "\n");
+                Console.ResetColor();
 
                 if (!result.IsSuccess)
                 {
                     var reason = result.Error;
+                    Console.Write("Status: ");
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Write(result);
+                    Console.WriteLine(reason + "\n");
+                    Console.ResetColor();
 
-                    Console.WriteLine(result);
                     await context.Channel.SendMessageAsync($"The following error occurred: \n {reason}");
-                    Console.WriteLine(reason);
                 }
                 else
                 {
+                    Console.Write("Status: ");
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.WriteLine(result);
+                    Console.ResetColor();
+
                     await context.Message.DeleteAsync(); //  delete successfully executed commands.
                 }
             }

@@ -14,8 +14,7 @@ namespace RubyNet.Commands.Warcraft
         [UsedImplicitly]
         public async Task RaiderIoCommand()
         {
-            //var client = new RaiderIOClient(Region.US, "Draenor", "Perifete");
-
+            //  ..
             await ReplyAsync("This is a test reply");
         }
     }

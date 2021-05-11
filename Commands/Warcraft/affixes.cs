@@ -2,11 +2,11 @@
 using Discord.Commands;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
-using RubyNet.API.raiderio;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using RubyNet.API.raiderio;
 
 namespace RubyNet.Commands.Warcraft
 {
@@ -14,6 +14,8 @@ namespace RubyNet.Commands.Warcraft
     public class Affixes : ModuleBase
     {
         [Command("affixes")]
+        [Summary
+            ("Prints the weekly affixes list as seen on raiderIO.")]
         [UsedImplicitly]
         public async Task WeeklyAffixesCommand()
         {
@@ -23,7 +25,7 @@ namespace RubyNet.Commands.Warcraft
 
             try
             {
-                var root = JsonConvert.DeserializeObject<Root>(response);
+                var root = JsonConvert.DeserializeObject<RootAffixes>(response);
                 affixes = root.AffixDetails;
             }
             catch (Exception ex)
