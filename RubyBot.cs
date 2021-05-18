@@ -1,63 +1,69 @@
 ﻿using Discord;
+using Discord.Addons.Hosting;
 using Discord.Commands;
 using Discord.WebSocket;
+using Interactivity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using RubyNet.Services;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace RubyNet
 {
-    public class RubyBot
+    public static class RubyBot
     {
         public const string TimeFormat = "dd/MM/yyyy HH:mm:ss tt";
 
-        private IConfigurationRoot Configuration { get; }
-
-        public RubyBot()
+        private static async Task Main()
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddYamlFile("_config.yml");
-            Configuration = builder.Build();
-        }
+            var builder = new HostBuilder()
+                .ConfigureAppConfiguration(x =>
+                {
+                    var configuration = new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("settings.json", false, true)
+                        .Build();
 
-        public static async Task RunAsync(string[] args)
-        {
-            if (args == null) throw new ArgumentNullException(nameof(args)); // might have to remove this line.
-            var startup = new RubyBot();
-            await startup.RunAsync();
-        }
+                    x.AddConfiguration(configuration);
+                })
+                .ConfigureLogging(x =>
+                {
+                    x.AddConsole();
+                    x.SetMinimumLevel(LogLevel.Debug);
+                })
+                .ConfigureDiscordHost<DiscordSocketClient>((context, config) =>
+                {
+                    config.SocketConfig = new DiscordSocketConfig
+                    {
+                        LogLevel = LogSeverity.Verbose,
+                        AlwaysDownloadUsers = true,
+                        MessageCacheSize = 1000,
+                    };
 
-        private async Task RunAsync()
-        {
-            var services = new ServiceCollection();
-            ConfigureServices(services);
+                    config.Token = context.Configuration["token"];
+                })
+                .UseCommandService((_, config) =>
+                {
+                    config.CaseSensitiveCommands = false;
+                    config.LogLevel = LogSeverity.Verbose;
+                    config.DefaultRunMode = RunMode.Async; // change this to "Sync" for debugging.
+                })
+                .ConfigureServices((_, services) =>
+                {
+                    services.AddHostedService<CommandHandler>();
+                    services.AddSingleton(new InteractivityConfig { DefaultTimeout = TimeSpan.FromSeconds(20) }); //  Discord.InteractivityAddon.
+                })
+                .UseConsoleLifetime();
 
-            var provider = services.BuildServiceProvider();
-            provider.GetRequiredService<CommandHandler>();
-
-            await provider.GetRequiredService<StartupService>().StartAsync();
-            await Task.Delay(-1);
-        }
-
-        private void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+            var host = builder.Build();
+            using (host)
             {
-                LogLevel = LogSeverity.Verbose,
-                MessageCacheSize = 1000
-            }))
-            .AddSingleton(new CommandService(new CommandServiceConfig
-            {
-                LogLevel = LogSeverity.Verbose,
-                DefaultRunMode = RunMode.Async,
-                CaseSensitiveCommands = false,
-            }))
-            .AddSingleton<CommandHandler>()
-            .AddSingleton<StartupService>()
-            .AddSingleton(Configuration);
+                await host.RunAsync();
+            }
         }
     }
 }

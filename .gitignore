@@ -2,4 +2,4 @@
 .vscode/
 bin/
 obj/
-_secrets.json
+settings.json
