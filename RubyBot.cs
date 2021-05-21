@@ -55,6 +55,8 @@ namespace RubyNet
                 .ConfigureServices((_, services) =>
                 {
                     services.AddHostedService<CommandHandler>();
+
+                    services.AddSingleton<InteractivityService>();
                     services.AddSingleton(new InteractivityConfig { DefaultTimeout = TimeSpan.FromSeconds(20) }); //  Discord.InteractivityAddon.
                 })
                 .UseConsoleLifetime();

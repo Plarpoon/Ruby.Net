@@ -1,38 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Discord;
-using JetBrains.Annotations;
-using Discord.Commands;
+﻿using Discord.Commands;
 using Interactivity;
-using Interactivity.Selection;
+using Interactivity.Confirmation;
+using JetBrains.Annotations;
+using System.Threading.Tasks;
 
 namespace RubyNet.Commands.Debugging
 {
     [UsedImplicitly]
     public class DependencyInjection : ModuleBase
     {
-        [Command("select")]
-        public async Task ExampleReactionSelectionAsync()
+        public InteractivityService Interactivity { get; [UsedImplicitly] set; }
+
+        [Command("confirm")]
+        [UsedImplicitly]
+        public async Task ExampleConfirmationAsync()
         {
-            var builder = new ReactionSelectionBuilder<string>()
-                .WithSelectables(new Dictionary<IEmote, string>()
-                {
-                    [new Emoji("💵")] = "Hi",
-                    [new Emoji("🍭")] = "How",
-                    [new Emoji("😩")] = "Hey",
-                    [new Emoji("💠")] = "Huh?!"
-                })
-                .WithUsers(Context.User)
-                .WithDeletion(DeletionOptions.AfterCapturedContext | DeletionOptions.Invalids);
+            var request = new ConfirmationBuilder()
+                .WithContent(new PageBuilder().WithText("Please Confirm"))
+                .Build();
 
-            var result = await Interactivity.SendSelectionAsync(builder.Build(), Context.Channel, TimeSpan.FromSeconds(50));
+            var result = await Interactivity.SendConfirmationAsync(request, Context.Channel);
 
-            if (result.IsSuccess)
+            if (result.Value)
             {
-                await Context.Channel.SendMessageAsync(result.Value.ToString());
+                await Context.Channel.SendMessageAsync("Confirmed :thumbsup:!");
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync("Declined :thumbsup:!");
             }
         }
-
     }
 }
