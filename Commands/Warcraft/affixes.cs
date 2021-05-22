@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using RubyNet.API.raiderio;
 
 namespace RubyNet.Commands.Warcraft
 {
@@ -21,11 +20,11 @@ namespace RubyNet.Commands.Warcraft
         {
             var client = new HttpClient();
             var response = await client.GetStringAsync("https://raider.io/api/v1/mythic-plus/affixes?region=us&locale=en");
-            IReadOnlyList<AffixDetail> affixes = null;
+            IReadOnlyList<API.raiderio.AffixDetail> affixes = null;
 
             try
             {
-                var root = JsonConvert.DeserializeObject<RootAffixes>(response);
+                var root = JsonConvert.DeserializeObject<API.raiderio.RootAffixes>(response);
                 affixes = root.AffixDetails;
             }
             catch (Exception ex)

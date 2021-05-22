@@ -3,7 +3,6 @@ using Interactivity;
 using Interactivity.Confirmation;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
-using RubyNet.API.raiderio;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -27,11 +26,11 @@ namespace RubyNet.Commands.Warcraft
             {
                 var client = new HttpClient();
                 var response = await client.GetStringAsync(url);
-                RaiderIoApi profile = null;
+                API.raiderio.RaiderIoApi profile = null;
 
                 try
                 {
-                    var root = JsonConvert.DeserializeObject<RaiderIoApi>(response);
+                    var root = JsonConvert.DeserializeObject<API.raiderio.RaiderIoApi>(response);
                     profile = root;
                 }
                 catch (Exception ex)
