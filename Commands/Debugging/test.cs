@@ -7,6 +7,7 @@ namespace RubyNet.Commands.Debugging
     [UsedImplicitly]
     public class Test : ModuleBase
     {
+        //  this is a command execution tester.
         [Command("test")]
         [UsedImplicitly]
         public async Task TestCommand()

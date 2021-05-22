@@ -9,9 +9,11 @@ namespace RubyNet.Commands.Debugging
     [UsedImplicitly]
     public class DependencyInjection : ModuleBase
     {
+        [UsedImplicitly]
         public InteractivityService Interactivity { get; [UsedImplicitly] set; }
 
-        [Command("confirm")]
+        //  this is a dependency injection tester.
+        [Command("test-confirm")]
         [UsedImplicitly]
         public async Task ExampleConfirmationAsync()
         {
@@ -23,11 +25,11 @@ namespace RubyNet.Commands.Debugging
 
             if (result.Value)
             {
-                await Context.Channel.SendMessageAsync("Confirmed :thumbsup:!");
+                await Context.Channel.SendMessageAsync("Confirmed 👍🏻!");
             }
             else
             {
-                await Context.Channel.SendMessageAsync("Declined :thumbsup:!");
+                await Context.Channel.SendMessageAsync("Declined 👍🏻!");
             }
         }
     }
