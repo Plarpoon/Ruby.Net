@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RubyNet.Commands.Debugging
 {
-    [UsedImplicitly]
+
     public class DependencyInjection : ModuleBase
     {
         [UsedImplicitly]

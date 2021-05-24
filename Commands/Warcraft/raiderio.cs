@@ -1,16 +1,15 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Interactivity;
 using Interactivity.Confirmation;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
-using System;
+using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace RubyNet.Commands.Warcraft
 {
-    [UsedImplicitly]
     public class RaiderIo : ModuleBase
     {
         [UsedImplicitly]
@@ -20,45 +19,63 @@ namespace RubyNet.Commands.Warcraft
         [Summary
             ("Assigns roles to the current user based on the raiderio profile, or the user parameter, if one passed.")]
         [Alias("r")]
-        [UsedImplicitly]
         public async Task RaiderIoCommand(string url)
         {
             if (url.StartsWith("https://raider.io/characters/"))
             {
-                // example string: https://raider.io/api/v1/characters/profile?region=us&realm=area-52&name=plarpoon
-
-                var region = Regex.Match(url, @"/characters/(.+?)/").Value;
-                var realm = ;
-                var character_name = ;
-                var apiUrl = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + character_name;
+                //  example url: https://raider.io/characters/us/area-52/plarpoon
+                //  example apiUrl: https://raider.io/api/v1/characters/profile?region=us&realm=area-52&name=plarpoon
+                var parsed = url.Split('/');
+                var region = parsed[4];
+                var realm = parsed[5];
+                var characterName = parsed[6];
+                var apiUrl = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + characterName;
 
                 var client = new HttpClient();
                 var response = await client.GetStringAsync(apiUrl);
-                API.raiderio.RaiderIoApi profile = null;
-
-                try
-                {
-                    var root = JsonConvert.DeserializeObject<API.raiderio.RaiderIoApi>(response);
-                    profile = root;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("API ERROR:");
-                    Console.WriteLine(ex.ToString());
-                }
+                var api = JsonConvert.DeserializeObject<API.raiderio.RaiderIoApi>(response);
 
                 var request = new ConfirmationBuilder()
-                    .WithContent(new PageBuilder().WithText("Please " + Context.User + " confirm your selection"))
-                    .Build();
+                .WithContent(new PageBuilder().WithText("Please " + Context.User + " confirm your selection"))
+                .Build();
 
                 var result = await Interactivity.SendConfirmationAsync(request, Context.Channel);
 
                 if (result.Value)
                 {
-                    if (profile != null)
+                    var user = Context.User;
+                    if (api != null)
                     {
-                        //  assign here Discord roles.
-                        //  switch case scenario.
+                        RolesSetup.WowRoles cClass = api.Class;
+
+                        switch (cClass)
+                        {
+                            case RolesSetup.WowRoles.Warlock:
+                                {
+                                    var warlock = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Warlock");
+                                    await ((IGuildUser)user).AddRoleAsync(warlock);
+                                    break;
+                                }
+
+                            case RolesSetup.WowRoles.Paladin:
+                                {
+                                    var paladin = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Paladin");
+                                    await ((IGuildUser)user).AddRoleAsync(paladin);
+                                    break;
+                                }
+
+                            case RolesSetup.WowRoles.Priest:
+                                {
+                                    var priest = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Priest");
+                                    await ((IGuildUser)user).AddRoleAsync(priest);
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    return;
+                                }
+                        }
 
                         await Context.Channel.SendMessageAsync("You Discord profile has been updated! 👍🏻");
                     }
@@ -72,14 +89,6 @@ namespace RubyNet.Commands.Warcraft
                     await Context.Channel.SendMessageAsync("Declined ❎!");
                 }
             }
-
-            // remove inactive messages.
-            //var endTime = DateTime.Now.AddMinutes(2);
-            //while (DateTime.Now < endTime)
-            //{
-            //    await Context.Channel.SendMessageAsync("Ehi " + Context.User + " the raiderio link you have provided has been deleted due to inactivity");
-            //    await Context.Message.DeleteAsync();
-            //}
         }
     }
 }
