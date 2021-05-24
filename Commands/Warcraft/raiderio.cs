@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace RubyNet.Commands.Warcraft
@@ -24,8 +25,15 @@ namespace RubyNet.Commands.Warcraft
         {
             if (url.StartsWith("https://raider.io/characters/"))
             {
+                // example string: https://raider.io/api/v1/characters/profile?region=us&realm=area-52&name=plarpoon
+
+                var region = Regex.Match(url, @"/characters/(.+?)/").Value;
+                var realm = ;
+                var character_name = ;
+                var apiUrl = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + character_name;
+
                 var client = new HttpClient();
-                var response = await client.GetStringAsync(url);
+                var response = await client.GetStringAsync(apiUrl);
                 API.raiderio.RaiderIoApi profile = null;
 
                 try
@@ -49,7 +57,8 @@ namespace RubyNet.Commands.Warcraft
                 {
                     if (profile != null)
                     {
-                        // assign here Discord roles.
+                        //  assign here Discord roles.
+                        //  switch case scenario.
 
                         await Context.Channel.SendMessageAsync("You Discord profile has been updated! 👍🏻");
                     }
@@ -64,6 +73,7 @@ namespace RubyNet.Commands.Warcraft
                 }
             }
 
+            // remove inactive messages.
             //var endTime = DateTime.Now.AddMinutes(2);
             //while (DateTime.Now < endTime)
             //{
