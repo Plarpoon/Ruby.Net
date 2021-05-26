@@ -1,12 +1,71 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace RubyNet.API.raiderio
 {
-    public class RaiderIoApi
+    public class Scores
     {
         [JsonConstructor]
-        public RaiderIoApi(
+        public Scores(
+            [JsonProperty("all")] double all,
+            [JsonProperty("dps")] double dps,
+            [JsonProperty("healer")] int healer,
+            [JsonProperty("tank")] double tank,
+            [JsonProperty("spec_0")] double spec0,
+            [JsonProperty("spec_1")] double spec1,
+            [JsonProperty("spec_2")] int spec2,
+            [JsonProperty("spec_3")] int spec3
+        )
+        {
+            this.All = all;
+            this.Dps = dps;
+            this.Healer = healer;
+            this.Tank = tank;
+            this.Spec0 = spec0;
+            this.Spec1 = spec1;
+            this.Spec2 = spec2;
+            this.Spec3 = spec3;
+        }
+
+        [JsonProperty("all")] public readonly double All;
+
+        [JsonProperty("dps")] public readonly double Dps;
+
+        [JsonProperty("healer")] public readonly int Healer;
+
+        [JsonProperty("tank")] public readonly double Tank;
+
+        [JsonProperty("spec_0")] public readonly double Spec0;
+
+        [JsonProperty("spec_1")] public readonly double Spec1;
+
+        [JsonProperty("spec_2")] public readonly int Spec2;
+
+        [JsonProperty("spec_3")] public readonly int Spec3;
+    }
+
+    public class MythicPlusScoresBySeason
+    {
+        [JsonConstructor]
+        public MythicPlusScoresBySeason(
+            [JsonProperty("season")] string season,
+            [JsonProperty("scores")] Scores scores
+        )
+        {
+            this.Season = season;
+            this.Scores = scores;
+        }
+
+        [JsonProperty("season")] public readonly string Season;
+
+        [JsonProperty("scores")] public readonly Scores Scores;
+    }
+
+    public class RootRaiderio
+    {
+        [JsonConstructor]
+        public RootRaiderio(
             [JsonProperty("name")] string name,
             [JsonProperty("race")] string race,
             [JsonProperty("class")] string @class,
@@ -21,7 +80,9 @@ namespace RubyNet.API.raiderio
             [JsonProperty("realm")] string realm,
             [JsonProperty("last_crawled_at")] DateTime lastCrawledAt,
             [JsonProperty("profile_url")] string profileUrl,
-            [JsonProperty("profile_banner")] string profileBanner
+            [JsonProperty("profile_banner")] string profileBanner,
+            [JsonProperty("mythic_plus_scores_by_season")]
+                List<MythicPlusScoresBySeason> mythicPlusScoresBySeason
         )
         {
             this.Name = name;
@@ -39,51 +100,40 @@ namespace RubyNet.API.raiderio
             this.LastCrawledAt = lastCrawledAt;
             this.ProfileUrl = profileUrl;
             this.ProfileBanner = profileBanner;
+            this.MythicPlusScoresBySeason = mythicPlusScoresBySeason;
         }
 
-        [JsonProperty("name")]
-        public string Name { get; }
+        [JsonProperty("name")] public readonly string Name;
 
-        [JsonProperty("race")]
-        public string Race { get; }
+        [JsonProperty("race")] public readonly string Race;
 
-        [JsonProperty("class")]
-        public string Class { get; }
+        [JsonProperty("class")] public readonly string Class;
 
-        [JsonProperty("active_spec_name")]
-        public string ActiveSpecName { get; }
+        [JsonProperty("active_spec_name")] public readonly string ActiveSpecName;
 
-        [JsonProperty("active_spec_role")]
-        public string ActiveSpecRole { get; }
+        [JsonProperty("active_spec_role")] public readonly string ActiveSpecRole;
 
-        [JsonProperty("gender")]
-        public string Gender { get; }
+        [JsonProperty("gender")] public readonly string Gender;
 
-        [JsonProperty("faction")]
-        public string Faction { get; }
+        [JsonProperty("faction")] public readonly string Faction;
 
-        [JsonProperty("achievement_points")]
-        public int AchievementPoints { get; }
+        [JsonProperty("achievement_points")] public readonly int AchievementPoints;
 
-        [JsonProperty("honorable_kills")]
-        public int HonorableKills { get; }
+        [JsonProperty("honorable_kills")] public readonly int HonorableKills;
 
-        [JsonProperty("thumbnail_url")]
-        public string ThumbnailUrl { get; }
+        [JsonProperty("thumbnail_url")] public readonly string ThumbnailUrl;
 
-        [JsonProperty("region")]
-        public string Region { get; }
+        [JsonProperty("region")] public readonly string Region;
 
-        [JsonProperty("realm")]
-        public string Realm { get; }
+        [JsonProperty("realm")] public readonly string Realm;
 
-        [JsonProperty("last_crawled_at")]
-        public DateTime LastCrawledAt { get; }
+        [JsonProperty("last_crawled_at")] public readonly DateTime LastCrawledAt;
 
-        [JsonProperty("profile_url")]
-        public string ProfileUrl { get; }
+        [JsonProperty("profile_url")] public readonly string ProfileUrl;
 
-        [JsonProperty("profile_banner")]
-        public string ProfileBanner { get; }
+        [JsonProperty("profile_banner")] public readonly string ProfileBanner;
+
+        [JsonProperty("mythic_plus_scores_by_season")]
+        public readonly List<MythicPlusScoresBySeason> MythicPlusScoresBySeason;
     }
 }
