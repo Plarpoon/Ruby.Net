@@ -36,7 +36,7 @@ namespace RubyNet.Commands.Warcraft
 
                 var client = new HttpClient();
                 var response = await client.GetStringAsync(apiUrl);
-                var api = JsonConvert.DeserializeObject<API.raiderio.RootRaiderio>(response);
+                var api = JsonConvert.DeserializeObject<API.raiderio.RootRaiderIoApi>(response);
                 var ioScores = api.MythicPlusScoresBySeason;
 
                 var request = new ConfirmationBuilder()
