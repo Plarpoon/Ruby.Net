@@ -9,13 +9,13 @@ namespace RubyNet.API.raiderio
         [JsonConstructor]
         public Scores(
             [JsonProperty("all")] double all,
-            [JsonProperty("dps")] int dps,
+            [JsonProperty("dps")] double dps,
             [JsonProperty("healer")] double healer,
-            [JsonProperty("tank")] int tank,
-            [JsonProperty("spec_0")] int spec0,
-            [JsonProperty("spec_1")] int spec1,
+            [JsonProperty("tank")] double tank,
+            [JsonProperty("spec_0")] double spec0,
+            [JsonProperty("spec_1")] double spec1,
             [JsonProperty("spec_2")] double spec2,
-            [JsonProperty("spec_3")] int spec3
+            [JsonProperty("spec_3")] double spec3
         )
         {
             this.All = all;
@@ -32,25 +32,25 @@ namespace RubyNet.API.raiderio
         public double All { get; }
 
         [JsonProperty("dps")]
-        public int Dps { get; }
+        public double Dps { get; }
 
         [JsonProperty("healer")]
         public double Healer { get; }
 
         [JsonProperty("tank")]
-        public int Tank { get; }
+        public double Tank { get; }
 
         [JsonProperty("spec_0")]
-        public int Spec0 { get; }
+        public double Spec0 { get; }
 
         [JsonProperty("spec_1")]
-        public int Spec1 { get; }
+        public double Spec1 { get; }
 
         [JsonProperty("spec_2")]
         public double Spec2 { get; }
 
         [JsonProperty("spec_3")]
-        public int Spec3 { get; }
+        public double Spec3 { get; }
     }
 
     public class MythicPlusScoresBySeason
