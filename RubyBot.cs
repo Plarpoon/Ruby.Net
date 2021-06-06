@@ -12,6 +12,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
+// Replace Microsoft.Extensions.Logging with Serilog in the near future. https://serilog.net/
+
 namespace RubyNet
 {
     public static class RubyBot
@@ -54,6 +56,9 @@ namespace RubyNet
                 })
                 .ConfigureServices((_, services) =>
                 {
+                    services.AddDbContext<Infrastructure>(); // database features.
+                    services.AddSingleton<Servers>();
+
                     services.AddHostedService<CommandHandler>();
 
                     services.AddSingleton<InteractivityService>();

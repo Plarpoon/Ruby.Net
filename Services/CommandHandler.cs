@@ -2,6 +2,7 @@
 using Discord.Addons.Hosting;
 using Discord.Commands;
 using Discord.WebSocket;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Reflection;
@@ -15,14 +16,16 @@ namespace RubyNet.Services
         private readonly IServiceProvider _provider;
         private readonly DiscordSocketClient _client;
         private readonly CommandService _service;
-        private readonly IConfiguration _config;
+        [UsedImplicitly] private readonly IConfiguration _config;
+        private readonly Servers _servers;
 
-        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfiguration config)
+        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfiguration config, Servers servers)
         {
             _provider = provider;
             _client = client;
             _service = service;
             _config = config;
+            _servers = servers;
         }
 
         public override async Task InitializeAsync(CancellationToken cancellationToken)
@@ -37,7 +40,8 @@ namespace RubyNet.Services
             if (arg is not SocketUserMessage { Source: MessageSource.User } message) return;
 
             var argPos = 0;
-            if (!message.HasStringPrefix(_config["prefix"], ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;
+            var prefix = await _servers.GetGuildPrefix(((SocketGuildChannel)message.Channel).Guild.Id) ?? "!";
+            if (!message.HasStringPrefix(prefix, ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;
 
             var context = new SocketCommandContext(_client, message);
             await _service.ExecuteAsync(context, argPos, _provider);
