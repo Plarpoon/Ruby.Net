@@ -37,7 +37,7 @@ namespace RubyNet
                     x.AddConsole();
                     x.SetMinimumLevel(LogLevel.Debug);
                 })
-                .ConfigureDiscordHost<DiscordSocketClient>((context, config) =>
+                .ConfigureDiscordHost((context, config) =>
                 {
                     config.SocketConfig = new DiscordSocketConfig
                     {
@@ -56,8 +56,8 @@ namespace RubyNet
                 })
                 .ConfigureServices((_, services) =>
                 {
-                    services.AddDbContext<Infrastructure>(); // database features.
-                    services.AddSingleton<Servers>();
+                    //services.AddDbContext<Infrastructure>(); // database features.
+                    //services.AddSingleton<Servers>();
 
                     services.AddHostedService<CommandHandler>();
 
