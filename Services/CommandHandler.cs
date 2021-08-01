@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Addons.Hosting;
+using Discord.Addons.Hosting.Util;
 using Discord.Commands;
 using Discord.WebSocket;
 using JetBrains.Annotations;
@@ -34,6 +35,12 @@ namespace RubyNet.Services
             _client.MessageReceived += OnMessageReceived;
             _service.CommandExecuted += OnCommandExecuted;
             await _service.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
+
+            // Wait for the client to be ready before setting the status
+            await Client.WaitForReadyAsync(cancellationToken);
+            Logger.LogInformation("Bot is in ready state!");
+
+            await Client.SetActivityAsync(new Game("Testing my new brain!"));
         }
 
         private async Task OnMessageReceived(SocketMessage arg)

@@ -6,13 +6,12 @@ using Interactivity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using RubyNet.Services;
+using Serilog;
+using Serilog.Events;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-
-// Replace Microsoft.Extensions.Logging with Serilog in the near future. https://serilog.net/
 
 namespace RubyNet
 {
@@ -25,17 +24,32 @@ namespace RubyNet
             var builder = new HostBuilder()
                 .ConfigureAppConfiguration(x =>
                 {
-                    var configuration = new ConfigurationBuilder()
-                        .SetBasePath(Directory.GetCurrentDirectory())
-                        .AddJsonFile("settings.json", false, true)
-                        .Build();
+                    try
+                    {
+                        Log.Information("Starting host");
+                        var configuration = new ConfigurationBuilder()
+                            .SetBasePath(Directory.GetCurrentDirectory())
+                            .AddJsonFile("settings.json", false, true)
+                            .Build();
 
-                    x.AddConfiguration(configuration);
+                        x.AddConfiguration(configuration);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Fatal(ex, "Host terminated unexpectedly");
+                    }
+                    finally
+                    {
+                        Log.CloseAndFlush();
+                    }
                 })
                 .ConfigureLogging(x =>
                 {
-                    x.AddConsole();
-                    x.SetMinimumLevel(LogLevel.Debug);
+                    Log.Logger = new LoggerConfiguration()
+                        .MinimumLevel.Information()
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+                        .WriteTo.Console()
+                        .CreateLogger();
                 })
                 .ConfigureDiscordHost((context, config) =>
                 {
@@ -62,9 +76,10 @@ namespace RubyNet
                     services.AddHostedService<CommandHandler>();
 
                     services.AddSingleton<InteractivityService>();
-                    services.AddSingleton(new InteractivityConfig { DefaultTimeout = TimeSpan.FromSeconds(20) }); //  Discord.InteractivityAddon.
+                    services.AddSingleton(new InteractivityConfig
+                    { DefaultTimeout = TimeSpan.FromSeconds(20) }); //  Discord.InteractivityAddon.
                 })
-                .UseConsoleLifetime();
+                .UseSerilog();
 
             var host = builder.Build();
             using (host)
