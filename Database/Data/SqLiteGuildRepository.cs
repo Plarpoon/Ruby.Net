@@ -7,7 +7,12 @@ namespace RubyNet.Database.Data
 {
     public class SqLiteGuildRepository : SqLiteBaseRepository, IGuildRepository
     {
-        public Guild GetGuild(long guildId)
+        public SqLiteGuildRepository()
+        {
+            if (!File.Exists(DbFile)) CreateDatabase();
+        }
+
+        public Guild GetGuild(ulong guildId)
         {
             if (!File.Exists(DbFile)) return null;
 
@@ -20,16 +25,21 @@ namespace RubyNet.Database.Data
             return result;
         }
 
-        public void SaveGuild(Guild guild)
+        public void UpdateGuild(Guild guild)
         {
-            if (!File.Exists(DbFile))
-            {
-                CreateDatabase();
-            }
-
             using var cnn = SimpleDbConnection();
             cnn.Open();
-            guild.GuildId = cnn.Query<long>(
+            cnn.Execute(
+                @"UPDATE Guild
+                SET GuildName = @GuildName
+                WHERE GuildId = @GuildId", guild);
+        }
+
+        public void SaveGuild(Guild guild)
+        {
+            using var cnn = SimpleDbConnection();
+            cnn.Open();
+            guild.GuildId = cnn.Query<ulong>(
                 @"INSERT INTO Guild
                     ( GuildName, Prefix, CreationDate ) VALUES
                     ( @GuildName, @Prefix, @CreationDate );

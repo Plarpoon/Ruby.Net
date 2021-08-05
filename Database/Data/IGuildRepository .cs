@@ -4,7 +4,7 @@ namespace RubyNet.Database.Data
 {
     public interface IGuildRepository
     {
-        Guild GetGuild(long guildId);
+        Guild GetGuild(ulong guildId);
 
         void SaveGuild(Guild guild);
     }

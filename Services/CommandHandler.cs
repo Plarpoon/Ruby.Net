@@ -5,7 +5,9 @@ using Discord.Commands;
 using Discord.WebSocket;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RubyNet.Database.Data;
 using System;
 using System.Reflection;
 using System.Threading;
@@ -19,7 +21,7 @@ namespace RubyNet.Services
         private readonly DiscordSocketClient _client;
         private readonly CommandService _service;
         [UsedImplicitly] private readonly IConfiguration _config;
-        //        private readonly Servers _servers;
+        private readonly SqLiteGuildRepository _repository;
 
         public CommandHandler(IServiceProvider provider, DiscordSocketClient client, ILogger<CommandHandler> logger, CommandService service, IConfiguration config) : base(client, logger)
         {
@@ -27,13 +29,15 @@ namespace RubyNet.Services
             _client = client;
             _service = service;
             _config = config;
-            //_servers = servers;
+
+            _repository = _provider.GetService<SqLiteGuildRepository>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             _client.MessageReceived += OnMessageReceived;
             _service.CommandExecuted += OnCommandExecuted;
+            _client.GuildUpdated += OnGuildUpdate;
             await _service.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
 
             // Wait for the client to be ready before setting the status
@@ -58,6 +62,18 @@ namespace RubyNet.Services
         private static async Task OnCommandExecuted(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
             if (command.IsSpecified && !result.IsSuccess) await context.Channel.SendMessageAsync($"Error: {result}");
+        }
+
+        private async Task OnGuildUpdate(SocketGuild oldGuild, SocketGuild newGuild)
+        {
+            var ourGuild = _repository.GetGuild(newGuild.Id);
+
+            if (newGuild.Name != ourGuild.GuildName)
+            {
+                ourGuild.GuildName = newGuild.Name;
+                _repository.UpdateGuild(ourGuild);
+            }
+            // TODO: update the guild in teh database
         }
     }
 }

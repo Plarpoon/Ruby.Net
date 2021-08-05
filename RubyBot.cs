@@ -71,9 +71,9 @@ namespace RubyNet
                 })
                 .ConfigureServices((_, services) =>
                 {
-                    services.AddSingleton<SqLiteGuildRepository>(); // this is stupid, I have to define what it executes, lack of time. next.
-
                     services.AddHostedService<CommandHandler>();
+
+                    services.AddSingleton<SqLiteGuildRepository>();
 
                     services.AddSingleton<InteractivityService>();
                     services.AddSingleton(new InteractivityConfig
