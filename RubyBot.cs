@@ -12,6 +12,7 @@ using Serilog.Events;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using RubyNet.Database.Data;
 
 namespace RubyNet
 {
@@ -43,7 +44,7 @@ namespace RubyNet
                         Log.CloseAndFlush();
                     }
                 })
-                .ConfigureLogging(x =>
+                .ConfigureLogging(_ =>
                 {
                     Log.Logger = new LoggerConfiguration()
                         .MinimumLevel.Information()
@@ -70,8 +71,7 @@ namespace RubyNet
                 })
                 .ConfigureServices((_, services) =>
                 {
-                    //services.AddDbContext<Infrastructure>(); // database features.
-                    //services.AddSingleton<Servers>();
+                    services.AddSingleton<SqLiteGuildRepository>(); // this is stupid, I have to define what it executes, lack of time. next.
 
                     services.AddHostedService<CommandHandler>();
 

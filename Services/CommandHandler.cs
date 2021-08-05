@@ -38,9 +38,9 @@ namespace RubyNet.Services
 
             // Wait for the client to be ready before setting the status
             await Client.WaitForReadyAsync(cancellationToken);
-            Logger.LogInformation("Bot is in ready state!");
+            Logger.LogInformation("Bot is ready!");
 
-            await Client.SetActivityAsync(new Game("Testing my new brain!"));
+            await Client.SetActivityAsync(new Game("Debugging and testing!"));  // Replace this with BotStatus service
         }
 
         private async Task OnMessageReceived(SocketMessage arg)
