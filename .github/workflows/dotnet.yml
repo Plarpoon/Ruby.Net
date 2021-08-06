@@ -18,8 +18,8 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ./Ruby.Net.sln
     - name: Build
-      run: dotnet build Ruby.Net.sln
+      run: dotnet build ./RubyNet.csproj --configuration Debug --no-restore
     - name: Test
-      run: dotnet test Ruby.Net.sln --verbosity normal
+      run: dotnet test ./Ruby.Net.sln --configuration Debug --no-restore
