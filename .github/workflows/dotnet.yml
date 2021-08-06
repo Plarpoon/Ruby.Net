@@ -20,6 +20,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build RubyNet.csproj
+      run: dotnet build Ruby.Net.sln
     - name: Test
-      run: dotnet test RubyNet.csproj --verbosity normal
+      run: dotnet test Ruby.Net.sln --verbosity normal
