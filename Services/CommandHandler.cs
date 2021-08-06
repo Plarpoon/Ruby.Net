@@ -71,9 +71,8 @@ namespace RubyNet.Services
             if (newGuild.Name != ourGuild.GuildName)
             {
                 ourGuild.GuildName = newGuild.Name;
-                _repository.UpdateGuild(ourGuild);
+                await SqLiteGuildRepository.UpdateGuild(ourGuild);
             }
-            // TODO: update the guild in teh database
         }
     }
 }

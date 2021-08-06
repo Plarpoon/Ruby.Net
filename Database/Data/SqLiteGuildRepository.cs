@@ -2,6 +2,7 @@
 using RubyNet.Database.Model;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RubyNet.Database.Data
 {
@@ -9,7 +10,7 @@ namespace RubyNet.Database.Data
     {
         public SqLiteGuildRepository()
         {
-            if (!File.Exists(DbFile)) CreateDatabase();
+            if (!File.Exists(DbFile)) _ = CreateDatabase();
         }
 
         public Guild GetGuild(ulong guildId)
@@ -25,11 +26,11 @@ namespace RubyNet.Database.Data
             return result;
         }
 
-        public void UpdateGuild(Guild guild)
+        public static async Task UpdateGuild(Guild guild)
         {
-            using var cnn = SimpleDbConnection();
+            await using var cnn = SimpleDbConnection();
             cnn.Open();
-            cnn.Execute(
+            await cnn.ExecuteAsync(
                 @"UPDATE Guild
                 SET GuildName = @GuildName
                 WHERE GuildId = @GuildId", guild);
@@ -46,11 +47,11 @@ namespace RubyNet.Database.Data
                     select last_insert_rowid()", guild).First();
         }
 
-        private static void CreateDatabase()
+        private static async Task CreateDatabase()
         {
-            using var cnn = SimpleDbConnection();
+            await using var cnn = SimpleDbConnection();
             cnn.Open();
-            cnn.Execute(
+            await cnn.ExecuteAsync(
                 @"create table Guild
                       (
                          ID                                  integer primary key AUTOINCREMENT,
