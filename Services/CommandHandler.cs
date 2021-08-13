@@ -51,9 +51,13 @@ namespace RubyNet.Services
         {
             if (arg is not SocketUserMessage { Source: MessageSource.User } message) return;
 
-            const int argPos = 0;
-            /*            var prefix = await _servers.GetGuildPrefix(((SocketGuildChannel)message.Channel).Guild.Id) ?? "!";
-                        if (!message.HasStringPrefix(prefix, ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;*/
+            var argPos = 0;
+
+            // prefix = //     TODO: recover channel ID. The channel ID is contained into a Server, database has to have a list of all channels in a server with their ID.
+            // TO BE USED WITH NEW TRIGGER
+
+            if (!message.HasStringPrefix(_config["prefix"], ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;        //  working trigger.
+            //if (!message.HasStringPrefix(_repository.GetGuild(prefix), ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;     // new trigger.
 
             var context = new SocketCommandContext(_client, message);
             await _service.ExecuteAsync(context, argPos, _provider);

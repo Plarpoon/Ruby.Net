@@ -37,7 +37,7 @@ namespace RubyNet
                     }
                     catch (Exception ex)
                     {
-                        Log.Fatal(ex, "Host terminated unexpectedly");
+                        Log.Fatal(ex, "Host terminated unexpectedly.");
                     }
                     finally
                     {
@@ -50,6 +50,7 @@ namespace RubyNet
                         .MinimumLevel.Information()
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                         .WriteTo.Console()
+                        .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
                         .CreateLogger();
                 })
                 .ConfigureDiscordHost((context, config) =>
@@ -67,7 +68,7 @@ namespace RubyNet
                 {
                     config.CaseSensitiveCommands = false;
                     config.LogLevel = LogSeverity.Verbose;
-                    config.DefaultRunMode = RunMode.Async; // change this to "Sync" for debugging.
+                    config.DefaultRunMode = RunMode.Async; // TODO: change this to "Sync" for debugging.
                 })
                 .ConfigureServices((_, services) =>
                 {
