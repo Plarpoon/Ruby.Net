@@ -74,7 +74,7 @@ namespace RubyNet
                 {
                     services.AddHostedService<CommandHandler>();
 
-                    services.AddSingleton<SqLiteGuildRepository>();
+                    services.AddSingleton<SqLiteDatabaseRepository>();
 
                     services.AddSingleton<InteractivityService>();
                     services.AddSingleton(new InteractivityConfig

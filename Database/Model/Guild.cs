@@ -1,5 +1,8 @@
-﻿namespace RubyNet.Database.Model
+﻿using JetBrains.Annotations;
+
+namespace RubyNet.Database.Model
 {
+    [UsedImplicitly]
     public class Guild
     {
         public ulong GuildId { get; set; }

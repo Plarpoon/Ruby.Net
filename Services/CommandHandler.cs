@@ -21,7 +21,7 @@ namespace RubyNet.Services
         private readonly DiscordSocketClient _client;
         private readonly CommandService _service;
         [UsedImplicitly] private readonly IConfiguration _config;
-        private readonly SqLiteGuildRepository _repository;
+        private readonly SqLiteDatabaseRepository _repository;
 
         public CommandHandler(IServiceProvider provider, DiscordSocketClient client, ILogger<CommandHandler> logger, CommandService service, IConfiguration config) : base(client, logger)
         {
@@ -30,7 +30,7 @@ namespace RubyNet.Services
             _service = service;
             _config = config;
 
-            _repository = _provider.GetService<SqLiteGuildRepository>();
+            _repository = _provider.GetService<SqLiteDatabaseRepository>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -53,7 +53,7 @@ namespace RubyNet.Services
 
             var argPos = 0;
 
-            // prefix = //     TODO: recover channel ID. The channel ID is contained into a Server, database has to have a list of all channels in a server with their ID.
+            // prefix = //     TODO: recover channel ID. The channel ID is contained into a Server, database has to have a list of all channels in a server with their ID. Cast to an IGuildChannel
             // TO BE USED WITH NEW TRIGGER
 
             if (!message.HasStringPrefix(_config["prefix"], ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;        //  working trigger.
@@ -75,7 +75,7 @@ namespace RubyNet.Services
             if (newGuild.Name != ourGuild.GuildName)
             {
                 ourGuild.GuildName = newGuild.Name;
-                await SqLiteGuildRepository.UpdateGuild(ourGuild);
+                await SqLiteDatabaseRepository.UpdateGuild(ourGuild);
             }
         }
     }
