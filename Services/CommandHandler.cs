@@ -45,6 +45,11 @@ namespace RubyNet.Services
             Logger.LogInformation("Bot is ready!");
 
             await Client.SetActivityAsync(new Game("Debugging and testing!"));  // Replace this with BotStatus service
+
+            // TODO: https://docs.stillu.cc/api/Discord.WebSocket.DiscordSocketClient.html#Discord_WebSocket_DiscordSocketClient_Guilds
+            // retrieve Guilds collection and use it to update Database at startup.
+
+            await _repository.ImportData(Client.Guilds);
         }
 
         private async Task OnMessageReceived(SocketMessage arg)
@@ -75,7 +80,7 @@ namespace RubyNet.Services
             if (newGuild.Name != ourGuild.GuildName)
             {
                 ourGuild.GuildName = newGuild.Name;
-                await SqLiteDatabaseRepository.UpdateGuild(ourGuild);
+                await _repository.UpdateGuild(ourGuild);
             }
         }
     }

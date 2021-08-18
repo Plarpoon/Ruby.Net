@@ -7,7 +7,7 @@ namespace RubyNet.Database.Data
     {
         protected static string DbFile => Environment.CurrentDirectory + "\\RubyDb.sqlite";
 
-        protected static SQLiteConnection SimpleDbConnection()
+        protected SQLiteConnection SimpleDbConnection()
         {
             return new SQLiteConnection("Data Source=" + DbFile);
         }

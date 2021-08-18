@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "<Pending>", Scope = "member", Target = "~F:RubyNet.Services.CommandHandler._config")]
+[assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>", Scope = "member", Target = "~M:RubyNet.Database.Data.SqLiteBaseRepository.SimpleDbConnection~System.Data.SQLite.SQLiteConnection")]

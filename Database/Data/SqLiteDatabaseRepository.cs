@@ -1,8 +1,10 @@
-﻿using Dapper;
+﻿using System.Collections.Generic;
+using Dapper;
 using RubyNet.Database.Model;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 
 namespace RubyNet.Database.Data
 {
@@ -13,14 +15,14 @@ namespace RubyNet.Database.Data
             if (!File.Exists(DbFile)) _ = CreateDatabase();
         }
 
-        private static async Task CreateDatabase()
+        private async Task CreateDatabase()
         {
             await using var cnn = SimpleDbConnection();
             cnn.Open();
             await cnn.ExecuteAsync(
                 @"create table Guild
                       (
-                         GuildId                             integer primary key AUTOINCREMENT,
+                         GuildId                             integer primary key,
                          GuildName                           varchar(100) not null,
                          Prefix                              varchar(100) not null,
                          CreationDate                        datetime not null
@@ -28,7 +30,7 @@ namespace RubyNet.Database.Data
 
                 create table Channel
                       (
-                         ChannelId                           integer primary key AUTOINCREMENT,
+                         ChannelId                           integer primary key,
                          GuildId                             integer,
                          CreationDate                        datetime not null,
                          FOREIGN KEY(GuildId) REFERENCES Guild(GuildId)
@@ -36,7 +38,7 @@ namespace RubyNet.Database.Data
 
                 create table User
                       (
-                         UserId                              integer primary key AUTOINCREMENT,
+                         UserId                              integer primary key,
                          GuildId                             integer,
                          Username                            varchar(100) not null,
                          Role                                varchar(100) not null,
@@ -65,7 +67,7 @@ namespace RubyNet.Database.Data
             return result;
         }
 
-        public static async Task UpdateGuild(Guild guild)
+        public async Task UpdateGuild(Guild guild)
         {
             await using var cnn = SimpleDbConnection();
             cnn.Open();
@@ -84,6 +86,17 @@ namespace RubyNet.Database.Data
                     ( GuildName, Prefix, CreationDate ) VALUES
                     ( @GuildName, @Prefix, @CreationDate );
                     select last_insert_rowid()", guild).First();
+        }
+
+        public async Task ImportData(IReadOnlyCollection<SocketGuild> guilds)
+        {
+            await using var cnn = SimpleDbConnection();
+            cnn.Open();
+            await cnn.ExecuteAsync(
+                @"UPDATE Guild
+                SET GuildName = @Name
+                SET CreationDate = @CreatedAt
+                WHERE GuildId = @Id", guilds);
         }
     }
 }
