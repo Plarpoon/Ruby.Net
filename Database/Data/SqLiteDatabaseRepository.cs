@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
-using Dapper;
+﻿using Dapper;
+using Discord.WebSocket;
 using RubyNet.Database.Model;
+using Serilog;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Discord.WebSocket;
 
 namespace RubyNet.Database.Data
 {
@@ -24,7 +26,7 @@ namespace RubyNet.Database.Data
                       (
                          GuildId                             integer primary key,
                          GuildName                           varchar(100) not null,
-                         Prefix                              varchar(100) not null,
+                         Prefix                              varchar(100),
                          CreationDate                        datetime not null
                       );
 
@@ -32,6 +34,7 @@ namespace RubyNet.Database.Data
                       (
                          ChannelId                           integer primary key,
                          GuildId                             integer,
+                         ChannelName                         varchar(100) not null,
                          CreationDate                        datetime not null,
                          FOREIGN KEY(GuildId) REFERENCES Guild(GuildId)
                       );
@@ -41,7 +44,16 @@ namespace RubyNet.Database.Data
                          UserId                              integer primary key,
                          GuildId                             integer,
                          Username                            varchar(100) not null,
-                         Role                                varchar(100) not null,
+                         JoinDate                            datetime not null,
+                         FOREIGN KEY(GuildId) REFERENCES Guild(GuildId)
+                      );
+
+                create table Role
+                      (
+                         RoleId                              integer primary key,
+                         GuildId                             integer,
+                         RoleName                            varchar(100) not null,
+                         RoleColor                           varchar(100) not null,
                          CreationDate                        datetime not null,
                          FOREIGN KEY(GuildId) REFERENCES Guild(GuildId)
                       );
@@ -49,6 +61,7 @@ namespace RubyNet.Database.Data
                 create table WorldOfWarcraft
                       (
                          UserId                              integer,
+                         GuildId                             integer,
                          Balance                             varchar(100) not null,
                          FOREIGN KEY(UserId) REFERENCES User(UserId)
                       );");
@@ -81,22 +94,48 @@ namespace RubyNet.Database.Data
         {
             using var cnn = SimpleDbConnection();
             cnn.Open();
-            guild.GuildId = cnn.Query<ulong>(
+            cnn.Execute(
                 @"INSERT INTO Guild
                     ( GuildName, Prefix, CreationDate ) VALUES
-                    ( @GuildName, @Prefix, @CreationDate );
-                    select last_insert_rowid()", guild).First();
+                    ( @GuildName, @Prefix, @CreationDate )", guild);
         }
 
         public async Task ImportData(IReadOnlyCollection<SocketGuild> guilds)
         {
-            await using var cnn = SimpleDbConnection();
-            cnn.Open();
-            await cnn.ExecuteAsync(
-                @"UPDATE Guild
-                SET GuildName = @Name
-                SET CreationDate = @CreatedAt
-                WHERE GuildId = @Id", guilds);
+            try
+            {
+                await using var cnn = SimpleDbConnection();
+                cnn.Open();
+                await cnn.ExecuteAsync(
+                    @"INSERT INTO Guild
+                    ( GuildName, GuildId, CreationDate ) VALUES
+                    ( @Name, @Id, @CreatedAt );", guilds);
+
+                foreach (var guild in guilds)
+                {
+                    await cnn.ExecuteAsync(@"INSERT INTO Channel
+                    ( ChannelID, GuildId, ChannelName, CreationDate ) VALUES
+                    ( @Id, @GuildId, @ChannelName, @CreatedAt );", guild.Channels.Select(c => new { c.Id, GuildId = guild.Id, c.Name, c.CreatedAt }));
+
+                    await cnn.ExecuteAsync(@"INSERT INTO User
+                    ( UserId, GuildId, Username, JoinDate ) VALUES
+                    ( @Id, @GuildId, @Username, @CreatedAt );", guild.Users.Select(u => new { u.Id, GuildId = guild.Id, u.Username, u.CreatedAt }));
+
+                    await cnn.ExecuteAsync(@"INSERT INTO Role
+                    ( RoleId, GuildId, RoleName, RoleColor, CreationDate ) VALUES
+                    ( @RoleId, @GuildId, @RoleName, @RoleColor, @CreationDate );", guild.Roles.Select(r => new { r.Id, GuildId = guild.Id, r.Name, r.Color, r.CreatedAt }));
+
+                    // TODO: update World Of Warcraft table.
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Failed to update the Database.");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
     }
 }
