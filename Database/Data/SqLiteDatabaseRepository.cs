@@ -41,7 +41,7 @@ namespace RubyNet.Database.Data
 
                 create table User
                       (
-                         UserId                              integer primary key,
+                         UserId                              integer,
                          GuildId                             integer,
                          Username                            varchar(100) not null,
                          JoinDate                            datetime not null,
@@ -64,7 +64,6 @@ namespace RubyNet.Database.Data
                          GuildId                             integer,
                          Balance                             varchar(100),
                          FOREIGN KEY(GuildId) REFERENCES Guild(GuildId)
-                         FOREIGN KEY(UserId) REFERENCES User(UserId)
                       );");
         }
 
@@ -120,7 +119,7 @@ namespace RubyNet.Database.Data
 
                     await cnn.ExecuteAsync(@"INSERT INTO User
                     ( UserId, GuildId, Username, JoinDate ) VALUES
-                    ( @Id, @GuildId, @Username, @CreatedAt ) ON CONFLICT(UserId) DO NOTHING;", guild.Users.Select(u => new { u.Id, GuildId = guild.Id, u.Username, u.CreatedAt }));
+                    ( @Id, @GuildId, @Username, @CreatedAt );", guild.Users.Select(u => new { u.Id, GuildId = guild.Id, u.Username, u.CreatedAt }));
 
                     await cnn.ExecuteAsync(@"INSERT INTO Role
                     ( RoleId, GuildId, RoleName, RoleColor, CreationDate ) VALUES
