@@ -2,8 +2,8 @@
 {
     public class User
     {
-        public int UserId { get; set; }
-        public int GuildId { get; set; }
+        public ulong UserId { get; set; }
+        public ulong GuildId { get; set; }
         public string Username { get; set; }
         public string JoinDate { get; set; }
     }

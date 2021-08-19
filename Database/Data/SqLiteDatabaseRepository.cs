@@ -62,7 +62,8 @@ namespace RubyNet.Database.Data
                       (
                          UserId                              integer,
                          GuildId                             integer,
-                         Balance                             varchar(100) not null,
+                         Balance                             varchar(100),
+                         FOREIGN KEY(GuildId) REFERENCES Guild(GuildId)
                          FOREIGN KEY(UserId) REFERENCES User(UserId)
                       );");
         }
@@ -115,15 +116,15 @@ namespace RubyNet.Database.Data
                 {
                     await cnn.ExecuteAsync(@"INSERT INTO Channel
                     ( ChannelID, GuildId, ChannelName, CreationDate ) VALUES
-                    ( @Id, @GuildId, @ChannelName, @CreatedAt );", guild.Channels.Select(c => new { c.Id, GuildId = guild.Id, c.Name, c.CreatedAt }));
+                    ( @Id, @GuildId, @Name, @CreatedAt );", guild.Channels.Select(c => new { c.Id, GuildId = guild.Id, c.Name, c.CreatedAt }));
 
                     await cnn.ExecuteAsync(@"INSERT INTO User
                     ( UserId, GuildId, Username, JoinDate ) VALUES
-                    ( @Id, @GuildId, @Username, @CreatedAt );", guild.Users.Select(u => new { u.Id, GuildId = guild.Id, u.Username, u.CreatedAt }));
+                    ( @Id, @GuildId, @Username, @CreatedAt ) ON CONFLICT(UserId) DO NOTHING;", guild.Users.Select(u => new { u.Id, GuildId = guild.Id, u.Username, u.CreatedAt }));
 
                     await cnn.ExecuteAsync(@"INSERT INTO Role
                     ( RoleId, GuildId, RoleName, RoleColor, CreationDate ) VALUES
-                    ( @RoleId, @GuildId, @RoleName, @RoleColor, @CreationDate );", guild.Roles.Select(r => new { r.Id, GuildId = guild.Id, r.Name, r.Color, r.CreatedAt }));
+                    ( @Id, @GuildId, @Name, @Color, @CreatedAt );", guild.Roles.Select(r => new { r.Id, GuildId = guild.Id, r.Name, Color = r.Color.RawValue, r.CreatedAt }));
 
                     // TODO: update World Of Warcraft table.
                 }
