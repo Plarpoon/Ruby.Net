@@ -38,18 +38,17 @@ namespace RubyNet.Services
             _client.MessageReceived += OnMessageReceived;
             _service.CommandExecuted += OnCommandExecuted;
             _client.GuildUpdated += OnGuildUpdate;
+            _client.JoinedGuild += OnJoinedGuild;
+            _client.LeftGuild += OnLeftGuild;
             await _service.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
 
             // Wait for the client to be ready before setting the status
             await Client.WaitForReadyAsync(cancellationToken);
             Logger.LogInformation("Bot is ready!");
 
-            await Client.SetActivityAsync(new Game("Debugging and testing!"));  // Replace this with BotStatus service
+            await Client.SetActivityAsync(new Game("Debugging and testing!"));  // Replace this with BotStatus service.
 
-            // TODO: https://docs.stillu.cc/api/Discord.WebSocket.DiscordSocketClient.html#Discord_WebSocket_DiscordSocketClient_Guilds
-            // retrieve Guilds collection and use it to update Database at startup.
-
-            await _repository.ImportData(Client.Guilds);
+            await _repository.ImportAllData(Client.Guilds); // retrieve Guild list at startup and populates database.
         }
 
         private async Task OnMessageReceived(SocketMessage arg)
@@ -82,6 +81,16 @@ namespace RubyNet.Services
                 ourGuild.GuildName = newGuild.Name;
                 await _repository.UpdateGuild(ourGuild);
             }
+        }
+
+        private async Task OnJoinedGuild(SocketGuild guild)
+        {
+            await _repository.ImportData(guild);
+        }
+
+        private async Task OnLeftGuild(SocketGuild guild)
+        {
+            await _repository.DeleteGuildData(guild);
         }
     }
 }

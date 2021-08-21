@@ -75,8 +75,8 @@ namespace RubyNet.Database.Data
             cnn.Open();
             var result = cnn.Query<Guild>(
                 @"SELECT GuildId, GuildName, Prefix, CreationDate
-                    FROM Guild
-                    WHERE Id = @id", new { guildId }).FirstOrDefault();
+                FROM Guild
+                WHERE Id = @id", new { guildId }).FirstOrDefault();
             return result;
         }
 
@@ -96,34 +96,76 @@ namespace RubyNet.Database.Data
             cnn.Open();
             cnn.Execute(
                 @"INSERT INTO Guild
-                    ( GuildName, Prefix, CreationDate ) VALUES
-                    ( @GuildName, @Prefix, @CreationDate )", guild);
+                ( GuildName, Prefix, CreationDate ) VALUES
+                ( @GuildName, @Prefix, @CreationDate )", guild);
         }
 
-        public async Task ImportData(IReadOnlyCollection<SocketGuild> guilds)
+        public async Task ImportData(SocketGuild guild)
+        {
+            try
+            {
+                await using var cnn = SimpleDbConnection();
+                cnn.Open();
+
+                await cnn.ExecuteAsync(
+                    @"INSERT OR REPLACE INTO Guild
+                    ( GuildName, GuildId, CreationDate ) VALUES
+                    ( @Name, @Id, @CreatedAt ) ON CONFLICT(GuildId) DO NOTHING;", guild);
+
+                await cnn.ExecuteAsync(
+                    @"INSERT OR REPLACE INTO Channel
+                    ( ChannelID, GuildId, ChannelName, CreationDate ) VALUES
+                    ( @Id, @GuildId, @Name, @CreatedAt );", guild.Channels.Select(c => new { c.Id, GuildId = guild.Id, c.Name, c.CreatedAt }));
+
+                await cnn.ExecuteAsync(
+                    @"INSERT OR REPLACE INTO User
+                    ( UserId, GuildId, Username, JoinDate ) VALUES
+                    ( @Id, @GuildId, @Username, @CreatedAt );", guild.Users.Select(u => new { u.Id, GuildId = guild.Id, u.Username, u.CreatedAt }));
+
+                await cnn.ExecuteAsync(
+                    @"INSERT OR REPLACE INTO Role
+                    ( RoleId, GuildId, RoleName, RoleColor, CreationDate ) VALUES
+                    ( @Id, @GuildId, @Name, @Color, @CreatedAt ) ON CONFLICT(RoleId) DO NOTHING;", guild.Roles.Select(r => new { r.Id, GuildId = guild.Id, r.Name, Color = r.Color.RawValue, r.CreatedAt }));
+
+                // TODO: update World Of Warcraft table.
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Failed to update the Database.");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
+        }
+
+        public async Task ImportAllData(IReadOnlyCollection<SocketGuild> guilds)
         {
             try
             {
                 await using var cnn = SimpleDbConnection();
                 cnn.Open();
                 await cnn.ExecuteAsync(
-                    @"INSERT INTO Guild
+                    @"INSERT OR REPLACE INTO Guild
                     ( GuildName, GuildId, CreationDate ) VALUES
-                    ( @Name, @Id, @CreatedAt );", guilds);
+                    ( @Name, @Id, @CreatedAt ) ON CONFLICT(GuildId) DO NOTHING;", guilds);
 
                 foreach (var guild in guilds)
                 {
-                    await cnn.ExecuteAsync(@"INSERT INTO Channel
+                    await cnn.ExecuteAsync(
+                    @"INSERT OR REPLACE INTO Channel
                     ( ChannelID, GuildId, ChannelName, CreationDate ) VALUES
                     ( @Id, @GuildId, @Name, @CreatedAt );", guild.Channels.Select(c => new { c.Id, GuildId = guild.Id, c.Name, c.CreatedAt }));
 
-                    await cnn.ExecuteAsync(@"INSERT INTO User
+                    await cnn.ExecuteAsync(
+                    @"INSERT OR REPLACE INTO User
                     ( UserId, GuildId, Username, JoinDate ) VALUES
                     ( @Id, @GuildId, @Username, @CreatedAt );", guild.Users.Select(u => new { u.Id, GuildId = guild.Id, u.Username, u.CreatedAt }));
 
-                    await cnn.ExecuteAsync(@"INSERT INTO Role
+                    await cnn.ExecuteAsync(
+                    @"INSERT OR REPLACE INTO Role
                     ( RoleId, GuildId, RoleName, RoleColor, CreationDate ) VALUES
-                    ( @Id, @GuildId, @Name, @Color, @CreatedAt );", guild.Roles.Select(r => new { r.Id, GuildId = guild.Id, r.Name, Color = r.Color.RawValue, r.CreatedAt }));
+                    ( @Id, @GuildId, @Name, @Color, @CreatedAt ) ON CONFLICT(RoleId) DO NOTHING;", guild.Roles.Select(r => new { r.Id, GuildId = guild.Id, r.Name, Color = r.Color.RawValue, r.CreatedAt }));
 
                     // TODO: update World Of Warcraft table.
                 }
@@ -136,6 +178,26 @@ namespace RubyNet.Database.Data
             {
                 Log.CloseAndFlush();
             }
+        }
+
+        public async Task DeleteGuildData(SocketGuild guild)
+        {
+            await using var cnn = SimpleDbConnection();
+            cnn.Open();
+
+            await cnn.ExecuteAsync(
+                @"DELETE FROM Guild WHERE GuildId = GuildId;", guild);
+
+            await cnn.ExecuteAsync(
+                @"DELETE FROM Channel WHERE GuildId = GuildId;", guild);
+
+            await cnn.ExecuteAsync(
+                @"DELETE FROM User WHERE GuildId = GuildId;", guild);
+
+            await cnn.ExecuteAsync(
+                @"DELETE FROM Role WHERE GuildId = GuildId;", guild);
+
+            // TODO: delete World Of Warcraft table.
         }
     }
 }
