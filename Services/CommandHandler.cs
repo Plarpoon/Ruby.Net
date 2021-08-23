@@ -48,7 +48,8 @@ namespace RubyNet.Services
 
             await Client.SetActivityAsync(new Game("Debugging and testing!"));  // Replace this with BotStatus service.
 
-            await _repository.ImportAllData(Client.Guilds); // retrieve Guild list at startup and populates database.
+            await _repository.ImportAllData(Client.Guilds);     //  retrieve Guild list at startup and populates database.
+            await _repository.DatabaseStartupCleanupTask(Client.Guilds);
         }
 
         private async Task OnMessageReceived(SocketMessage arg)

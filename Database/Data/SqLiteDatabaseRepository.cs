@@ -67,6 +67,31 @@ namespace RubyNet.Database.Data
                       );");
         }
 
+        public async Task DatabaseStartupCleanupTask(IEnumerable<SocketGuild> guilds)
+        {
+            const string sql = "SELECT GuildId FROM Guild WHERE GuildId IS @GuildId";
+            await using var cnn = SimpleDbConnection();
+            cnn.Open();
+
+            foreach (var guild in guilds)
+            {
+                var result = cnn.Query(sql, new { GuildId = guild.Id });
+
+                if (guild.Id != result.Single().Cast<ulong>()) continue;
+                await cnn.ExecuteAsync(
+                    @"DELETE FROM Guild WHERE GuildId = GuildId;", result);
+
+                await cnn.ExecuteAsync(
+                    @"DELETE FROM Channel WHERE GuildId = GuildId;", result);
+
+                await cnn.ExecuteAsync(
+                    @"DELETE FROM User WHERE GuildId = GuildId;", result);
+
+                await cnn.ExecuteAsync(
+                    @"DELETE FROM Role WHERE GuildId = GuildId;", result);
+            }
+        }
+
         public Guild GetGuild(ulong guildId)
         {
             if (!File.Exists(DbFile)) return null;
