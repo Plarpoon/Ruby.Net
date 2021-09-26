@@ -1,4 +1,8 @@
 # Ruby.Net
+> This project got depreacated since the library died.
+> 
+> Anything under here this point is just for preservation.
+___
 > General purpose Discord.Net bot made for my community.
 
 [![NET Version][net-image]][net-url]
